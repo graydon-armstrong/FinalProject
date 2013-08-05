@@ -16,6 +16,11 @@ class Enemy(gameEngine.SuperSprite):
         self.setSpeed(5)
         self.setPosition((240,100))
         self.setBoundAction(self.ENEMYBOUNCE)       
+    
+    def reset(self):
+        self.setAngle(0)
+        self.setSpeed(5)
+        self.setPosition((240,100))
        
 class Ship(gameEngine.SuperSprite):
     def __init__(self,scene):
@@ -63,11 +68,17 @@ class Game(gameEngine.Scene):
         self.background.fill((0, 0, 0))
         self.bullet = Bullet(self)
         self.enemy = Enemy(self)
+        self.enemyGroup = self.makeSpriteGroup(self.enemy)
         self.sprites = [self.ship,self.bullet, self.enemy]
         
     def update(self):
         if (self.bullet.y < 0):
             self.ship.canShoot = True
+            
+        enemyHitBullet = self.bullet.collidesGroup(self.enemyGroup)
+        if enemyHitBullet:
+            enemyHitBullet.reset()
+            self.bullet.reset()
 
 def main():   
     game = Game()    
