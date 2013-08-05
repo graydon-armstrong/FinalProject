@@ -8,6 +8,15 @@
 
 import pygame, gameEngine
        
+class Enemy(gameEngine.SuperSprite):
+    def __init__(self,scene):
+        gameEngine.SuperSprite.__init__(self, scene)
+        self.setImage("enemy.gif")
+        self.setAngle(0)
+        self.setSpeed(5)
+        self.setPosition((240,100))
+        self.setBoundAction(self.ENEMYBOUNCE)       
+       
 class Ship(gameEngine.SuperSprite):
     def __init__(self,scene):
         gameEngine.SuperSprite.__init__(self, scene)
@@ -53,7 +62,8 @@ class Game(gameEngine.Scene):
         self.setCaption("Space Game")
         self.background.fill((0, 0, 0))
         self.bullet = Bullet(self)
-        self.sprites = [self.ship,self.bullet]
+        self.enemy = Enemy(self)
+        self.sprites = [self.ship,self.bullet, self.enemy]
         
     def update(self):
         if (self.bullet.y < 0):

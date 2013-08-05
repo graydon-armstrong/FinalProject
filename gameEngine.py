@@ -62,6 +62,7 @@ class SuperSprite(pygame.sprite.Sprite):
         self.STOP = 2
         self.HIDE = 3
         self.CONTINUE = 4
+        self.ENEMYBOUNCE = 5
         
         #create a default text image as a placeholder
         #This will usually be changed by a setImage call
@@ -177,6 +178,12 @@ class SuperSprite(pygame.sprite.Sprite):
                 
             self.updateVector()
             self.rotation = self.dir
+    
+        elif self.boundAction == self.ENEMYBOUNCE:
+            if offLeft or offRight:
+                self.dx *= -1
+                self.y += 10
+                self.updateVector()
         
         elif self.boundAction == self.STOP:
             if offScreen:
