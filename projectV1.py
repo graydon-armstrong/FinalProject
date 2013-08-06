@@ -7,6 +7,15 @@
 # Revision History: Version 1 is setting up a basic game framework
 
 import pygame, gameEngine
+
+stage = 1
+score = 0
+
+# class ScoreBoard(gameEngine.Label):
+#     def __init__(self, scene):
+#         gameEngine.Label.__init__(self, scene)
+#         self.center = (100,0)
+#         self.text = "Score: 0"
        
 class Enemy(gameEngine.SuperSprite):
     def __init__(self,scene):
@@ -18,6 +27,12 @@ class Enemy(gameEngine.SuperSprite):
         self.setBoundAction(self.ENEMYBOUNCE)       
     
     def reset(self):
+        self.scene.enemiesLeft -= 1
+        
+        global score
+        score += 10*self.level
+        self.scene.scoreBoard.text = "Score: " + str(score)
+        
         if(self.level != 3):
             self.level += 1
             self.setImage("enemy" + str(self.level) + ".gif")
@@ -27,7 +42,7 @@ class Enemy(gameEngine.SuperSprite):
         else:
             self.setPosition((240,-100))
             self.setSpeed(0)
-       
+            
 class Ship(gameEngine.SuperSprite):
     def __init__(self,scene):
         gameEngine.SuperSprite.__init__(self, scene)
@@ -74,15 +89,23 @@ class Game(gameEngine.Scene):
         self.background.fill((0, 0, 0))
         self.bullet = Bullet(self)
         
+        self.scoreBoard = gameEngine.Label()
+        self.scoreBoard.font = pygame.font.SysFont("arial",30)
+        self.scoreBoard.center = (75,15)
+        self.scoreBoard.size = (150,30)
+        self.scoreBoard.text = "Score: 0"
+        
         self.enemies = []
-        for ii in range(3):
+        for ii in range(stage):
             for i in range(5):
                 self.enemies.append(Enemy(self))
                 self.enemies[(i+(ii)*5)].setPosition((40+i*40,100+ii*40))
+                
+        self.enemiesLeft = stage*5*3
             
         self.enemyGroup = self.makeSpriteGroup(self.enemies)
         
-        self.sprites = [self.ship,self.bullet, self.enemies]
+        self.sprites = [self.ship,self.bullet, self.enemies, self.scoreBoard]
         
     def update(self):
         if (self.bullet.y < 0):
@@ -92,10 +115,16 @@ class Game(gameEngine.Scene):
         if enemyHitBullet:
             enemyHitBullet.reset()
             self.bullet.reset()
+        
+        if (self.enemiesLeft <= 0):
+            self.stop()
 
-def main():   
-    game = Game()    
-    game.start()
+def main(): 
+    while True:  
+        game = Game()    
+        game.start()
+        global stage
+        stage += 1
     
 #run the main menthod at the start
 if __name__ == "__main__":
