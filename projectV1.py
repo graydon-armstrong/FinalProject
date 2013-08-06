@@ -14,7 +14,6 @@ class Enemy(gameEngine.SuperSprite):
         self.setImage("enemy.gif")
         self.setAngle(0)
         self.setSpeed(5)
-        self.setPosition((240,100))
         self.setBoundAction(self.ENEMYBOUNCE)       
     
     def reset(self):
@@ -67,9 +66,17 @@ class Game(gameEngine.Scene):
         self.setCaption("Space Game")
         self.background.fill((0, 0, 0))
         self.bullet = Bullet(self)
-        self.enemy = Enemy(self)
-        self.enemyGroup = self.makeSpriteGroup(self.enemy)
-        self.sprites = [self.ship,self.bullet, self.enemy]
+        
+        self.enemies = []
+        for ii in range(3):
+            for i in range(5):
+                self.enemies.append(Enemy(self))
+                #print str(40+i*40) + " , " + str(100+ii*40)
+                self.enemies[(i+(ii)*5)].setPosition((40+i*40,100+ii*40))
+            
+        self.enemyGroup = self.makeSpriteGroup(self.enemies)
+        
+        self.sprites = [self.ship,self.bullet, self.enemies]
         
     def update(self):
         if (self.bullet.y < 0):

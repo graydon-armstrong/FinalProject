@@ -182,7 +182,7 @@ class SuperSprite(pygame.sprite.Sprite):
         elif self.boundAction == self.ENEMYBOUNCE:
             if offLeft or offRight:
                 self.dx *= -1
-                self.y += 10
+                self.y += 40
                 self.updateVector()
         
         elif self.boundAction == self.STOP:
