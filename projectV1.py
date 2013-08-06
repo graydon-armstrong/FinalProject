@@ -11,15 +11,22 @@ import pygame, gameEngine
 class Enemy(gameEngine.SuperSprite):
     def __init__(self,scene):
         gameEngine.SuperSprite.__init__(self, scene)
-        self.setImage("enemy.gif")
+        self.level = 1
+        self.setImage("enemy" + str(self.level) + ".gif")
         self.setAngle(0)
         self.setSpeed(5)
         self.setBoundAction(self.ENEMYBOUNCE)       
     
     def reset(self):
-        self.setAngle(0)
-        self.setSpeed(5)
-        self.setPosition((240,100))
+        if(self.level != 3):
+            self.level += 1
+            self.setImage("enemy" + str(self.level) + ".gif")
+            self.setAngle(0)
+            self.setSpeed((self.level-1)*1.5+5)
+            self.setPosition((240,100))
+        else:
+            self.setPosition((240,-100))
+            self.setSpeed(0)
        
 class Ship(gameEngine.SuperSprite):
     def __init__(self,scene):
@@ -46,9 +53,9 @@ class Ship(gameEngine.SuperSprite):
 class Bullet(gameEngine.SuperSprite):
     def __init__(self, scene):
         gameEngine.SuperSprite.__init__(self, scene)
+        self.setPosition ((-100, -100))
         self.setImage("bullet.gif")
         self.setBoundAction(self.HIDE)
-        self.reset()
         
     def fire(self):
         self.setPosition((self.scene.ship.x, self.scene.ship.y))
@@ -71,7 +78,6 @@ class Game(gameEngine.Scene):
         for ii in range(3):
             for i in range(5):
                 self.enemies.append(Enemy(self))
-                #print str(40+i*40) + " , " + str(100+ii*40)
                 self.enemies[(i+(ii)*5)].setPosition((40+i*40,100+ii*40))
             
         self.enemyGroup = self.makeSpriteGroup(self.enemies)
