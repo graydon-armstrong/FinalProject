@@ -28,7 +28,7 @@ class Enemy(gameEngine.SuperSprite):
         score += 10*self.level
         self.scene.scoreBoard.text = "Score: " + str(score) + " Level: " + str(stage)
         
-        if(self.level != 3):
+        if(self.level != 4):
             self.level += 1
             self.setImage("enemy" + str(self.level) + ".gif")
             self.setAngle(0)
@@ -97,7 +97,7 @@ class Game(gameEngine.Scene):
                 self.enemies.append(Enemy(self))
                 self.enemies[(i+(ii)*5)].setPosition((40+i*40,100+ii*40))
                 
-        self.enemiesLeft = stage*5*3
+        self.enemiesLeft = stage*5*4
             
         self.enemyGroup = self.makeSpriteGroup(self.enemies)
         
@@ -113,7 +113,7 @@ class Game(gameEngine.Scene):
             self.bullet.reset()
             
         for enemy in self.enemies:
-            if (enemy.y > 300):
+            if (enemy.y > 550):
                 global keepPlaying
                 keepPlaying = False
                 self.stop()
