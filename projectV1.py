@@ -10,12 +10,7 @@ import pygame, gameEngine
 
 stage = 1
 score = 0
-
-# class ScoreBoard(gameEngine.Label):
-#     def __init__(self, scene):
-#         gameEngine.Label.__init__(self, scene)
-#         self.center = (100,0)
-#         self.text = "Score: 0"
+keepPlaying = True
        
 class Enemy(gameEngine.SuperSprite):
     def __init__(self,scene):
@@ -29,9 +24,9 @@ class Enemy(gameEngine.SuperSprite):
     def reset(self):
         self.scene.enemiesLeft -= 1
         
-        global score
+        global score, stage
         score += 10*self.level
-        self.scene.scoreBoard.text = "Score: " + str(score)
+        self.scene.scoreBoard.text = "Score: " + str(score) + " Level: " + str(stage)
         
         if(self.level != 3):
             self.level += 1
@@ -91,9 +86,10 @@ class Game(gameEngine.Scene):
         
         self.scoreBoard = gameEngine.Label()
         self.scoreBoard.font = pygame.font.SysFont("arial",30)
-        self.scoreBoard.center = (75,15)
-        self.scoreBoard.size = (150,30)
-        self.scoreBoard.text = "Score: 0"
+        self.scoreBoard.center = (240,15)
+        self.scoreBoard.size = (480,30)
+        global score, stage
+        self.scoreBoard.text = "Score: " + str(score) + " Level: " + str(stage)
         
         self.enemies = []
         for ii in range(stage):
@@ -115,16 +111,103 @@ class Game(gameEngine.Scene):
         if enemyHitBullet:
             enemyHitBullet.reset()
             self.bullet.reset()
+            
+        for enemy in self.enemies:
+            if (enemy.y > 300):
+                global keepPlaying
+                keepPlaying = False
+                self.stop()
         
         if (self.enemiesLeft <= 0):
             self.stop()
+            
+class ScoreScreen(gameEngine.Scene):
+    def __init__(self):
+        gameEngine.Scene.__init__(self) 
+        self.ship = Ship(self)    
+        self.setCaption("Space Game")
+        
+        self.scoreBoard = gameEngine.MultiLabel()
+        self.scoreBoard.font = pygame.font.SysFont("arial",30)
+        self.scoreBoard.center = (240,300)
+        self.scoreBoard.size = (300,60)
+        global score, stage
+        self.scoreBoard.textLines = ["Game Over", "Score: " + str(score) + " Level: " + str(stage)]
+        
+        self.Button = gameEngine.Button()
+        self.Button.font = pygame.font.SysFont("arial",30)
+        self.Button.center = (240,370)
+        self.Button.size = (300,30)
+        self.Button.text = "Play Again"
+        
+        self.quitButton = gameEngine.Button()
+        self.quitButton.font = pygame.font.SysFont("arial",30)
+        self.quitButton.center = (240,410)
+        self.quitButton.size = (300,30)
+        self.quitButton.text = "Quit"
+        
+        self.sprites = [self.scoreBoard,self.Button, self.quitButton]
+        
+    def update(self):
+        if self.Button.clicked:
+            global keepPlaying
+            keepPlaying = True
+            self.stop()
+            
+        if self.quitButton.clicked:
+            self.stop()
+            
+class MenuScreen(gameEngine.Scene):
+    def __init__(self):
+        gameEngine.Scene.__init__(self) 
+        self.ship = Ship(self)    
+        self.setCaption("Space Game")
+        
+        self.scoreBoard = gameEngine.MultiLabel()
+        self.scoreBoard.font = pygame.font.SysFont("arial",30)
+        self.scoreBoard.center = (240,300)
+        self.scoreBoard.size = (300,60)
+        global score, stage
+        self.scoreBoard.textLines = ["Space Game", "Space Invaders Tribute"]
+        
+        self.Button = gameEngine.Button()
+        self.Button.font = pygame.font.SysFont("arial",30)
+        self.Button.center = (240,370)
+        self.Button.size = (300,30)
+        self.Button.text = "Play Game"
+        
+        self.quitButton = gameEngine.Button()
+        self.quitButton.font = pygame.font.SysFont("arial",30)
+        self.quitButton.center = (240,410)
+        self.quitButton.size = (300,30)
+        self.quitButton.text = "Quit"
+        
+        self.sprites = [self.scoreBoard,self.Button, self.quitButton]
+        
+    def update(self):
+        if self.Button.clicked:
+            global keepPlaying, score, stage
+            keepPlaying = True
+            stage = 1
+            score = 0
+            self.stop()
+            
+        if self.quitButton.clicked:
+            self.stop()
 
-def main(): 
-    while True:  
-        game = Game()    
-        game.start()
-        global stage
-        stage += 1
+def main():
+    #placeholder for start screen
+    while keepPlaying:
+        menuScreen = MenuScreen()
+        menuScreen.start()
+        while keepPlaying:  
+            game = Game()    
+            game.start()
+            global stage
+            stage += 1
+        endscreen = ScoreScreen()
+        endscreen.start()
+    #placeholder for end screen
     
 #run the main menthod at the start
 if __name__ == "__main__":
